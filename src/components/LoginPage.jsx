@@ -112,7 +112,7 @@ export default function LoginPage({ dark, setDark, onAuthSuccess }) {
             {/* Error Message */}
             {error && (
               <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-2">
-                <AlertCircle size={16} className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0"/>
+                <AlertCircle size={16} className="text-red-600 dark:text-red-400 mt-0.5 shrink-0"/>
                 <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
               </div>
             )}

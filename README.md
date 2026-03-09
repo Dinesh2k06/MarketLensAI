@@ -20,7 +20,7 @@ This is a **B2B SaaS tool** that helps small business owners monitor their compe
 ## 🛠️ Tech Stack
 
 | Layer | Technology |
-|-------|-----------|
+| ------- | ----------- |
 | **Frontend** | React 19 + Vite 7 |
 | **Styling** | Tailwind CSS v4 (with `@tailwindcss/vite` plugin) |
 | **Icons** | Lucide React |
@@ -35,7 +35,7 @@ This is a **B2B SaaS tool** that helps small business owners monitor their compe
 
 ## 📂 Project Structure
 
-```
+```text
 c:\Multi-Agent Market Intelligence Bot
 ├── src/
 │   ├── App.jsx                       # Main router (Login → Wizard → Dashboard)
@@ -66,7 +66,7 @@ npm install
 
 ### 2. Supabase Setup
 
-1. Go to **https://supabase.com** → Create new project
+1. Go to **[supabase.com](https://supabase.com)** → Create new project
 2. In Supabase dashboard → **SQL Editor** → New query
 3. Copy the entire contents of `supabase_schema.sql` and run it
 4. Go to **Settings → API** and copy:
@@ -74,6 +74,7 @@ npm install
    - **anon / public key** (starts with `eyJ...`)
 
 5. Add to `.env`:
+
    ```env
    VITE_SUPABASE_URL=https://your-project-id.supabase.co
    VITE_SUPABASE_ANON_KEY=eyJyour-anon-key-here...
@@ -81,8 +82,9 @@ npm install
 
 ### 3. Gemini AI Setup (for the chatbot)
 
-1. Go to **https://aistudio.google.com/app/apikey** → Create API key (free tier available)
+1. Go to **[Google AI Studio](https://aistudio.google.com/app/apikey)** → Create API key (free tier available)
 2. Add to `.env`:
+
    ```env
    VITE_GEMINI_API_KEY=your-key-here
    ```
@@ -90,6 +92,7 @@ npm install
 ### 4. n8n Webhook Setup
 
 The frontend is already configured with:
+
 ```env
 VITE_N8N_WEBHOOK=https://marketdemo11.app.n8n.cloud/webhook-test/business-strategy
 ```
@@ -110,7 +113,7 @@ VITE_N8N_WEBHOOK=https://marketdemo11.app.n8n.cloud/webhook-test/business-strate
 npm run dev
 ```
 
-Open **http://localhost:5173**
+Open <http://localhost:5173>
 
 ### 6. Build for Production
 
@@ -213,7 +216,7 @@ POST https://marketdemo11.app.n8n.cloud/webhook-test/business-strategy
 ### All API Functions
 
 | Function | Type | Request Body |
-|----------|------|-------------|
+| ---------- | ------ | ------------- |
 | `submitOnboarding` | `onboarding` | `{ business, products, competitors }` |
 | `fetchLatestAnalysis` | `analysis` | `{ user_id, action: "latest" }` |
 | `fetchHistory` | `analysis` | `{ user_id, action: "history", limit: 30 }` |
@@ -320,6 +323,7 @@ MIT
 ## 🤝 Contributing
 
 Built for small business owners with zero technical knowledge. Prioritize:
+
 - **Simplicity**: No complex config, works out of the box
 - **Mock data fallback**: UI stays functional even without backend
 - **Clear error messages**: Guide users when something goes wrong
