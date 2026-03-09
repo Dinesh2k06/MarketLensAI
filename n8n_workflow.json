@@ -1,118 +1,96 @@
 {
+  "meta": { "instanceId": "marketlensai" },
   "name": "Market Intelligence Bot",
   "nodes": [
 
     {
-      "id": "n_webhook",
+      "id": "note-setup",
+      "name": "SETUP INSTRUCTIONS",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, -200],
+      "parameters": {
+        "content": "## ⚙️ Setup Steps\n1. Open the **Config** node and replace:\n   - `YOUR_PROJECT_ID` → your Supabase project ID\n   - `YOUR_ANON_KEY` → your Supabase anon key\n2. Add Credentials in n8n Settings → Credentials:\n   - **Google Gemini API** (key from aistudio.google.com)\n   - **Gmail OAuth2** (for daily reports)\n3. Do the same replacements in the **Daily Scheduler** section HTTP nodes\n4. Click **Activate** (top-right toggle)",
+        "width": 380,
+        "height": 180,
+        "color": 5
+      }
+    },
+
+    {
+      "id": "wh001",
       "name": "Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
-      "position": [0, 300],
-      "webhookId": "business-strategy",
+      "position": [260, 300],
       "parameters": {
         "httpMethod": "POST",
         "path": "business-strategy",
         "responseMode": "responseNode",
         "options": {}
+      },
+      "webhookId": "business-strategy"
+    },
+
+    {
+      "id": "cfg001",
+      "name": "Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [480, 300],
+      "parameters": {
+        "mode": "keepAllValuesExcept",
+        "assignments": {
+          "assignments": [
+            { "id": "f1", "name": "supabase_url", "value": "https://YOUR_PROJECT_ID.supabase.co", "type": "string" },
+            { "id": "f2", "name": "supabase_key", "value": "YOUR_ANON_KEY", "type": "string" }
+          ]
+        },
+        "options": {}
       }
     },
 
     {
-      "id": "n_switch",
+      "id": "sw001",
       "name": "Route by Type",
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3,
-      "position": [220, 300],
+      "position": [700, 300],
       "parameters": {
         "mode": "rules",
         "rules": {
           "values": [
             {
-              "outputKey": "onboarding",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_1", "leftValue": "={{ $json.type }}", "rightValue": "onboarding", "operator": { "type": "string", "operation": "equals" } }]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r1", "leftValue": "={{ $json.type }}", "rightValue": "onboarding", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "onboarding"
             },
             {
-              "outputKey": "analysis_latest",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [
-                  { "id": "sw_2a", "leftValue": "={{ $json.type }}", "rightValue": "analysis", "operator": { "type": "string", "operation": "equals" } },
-                  { "id": "sw_2b", "leftValue": "={{ $json.action }}", "rightValue": "latest", "operator": { "type": "string", "operation": "equals" } }
-                ]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r2", "leftValue": "={{ $json.type }}", "rightValue": "analysis", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "analysis"
             },
             {
-              "outputKey": "analysis_history",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [
-                  { "id": "sw_3a", "leftValue": "={{ $json.type }}", "rightValue": "analysis", "operator": { "type": "string", "operation": "equals" } },
-                  { "id": "sw_3b", "leftValue": "={{ $json.action }}", "rightValue": "history", "operator": { "type": "string", "operation": "equals" } }
-                ]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r3", "leftValue": "={{ $json.type }}", "rightValue": "reports", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "reports"
             },
             {
-              "outputKey": "refresh",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_4", "leftValue": "={{ $json.type }}", "rightValue": "refresh", "operator": { "type": "string", "operation": "equals" } }]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r4", "leftValue": "={{ $json.type }}", "rightValue": "chat", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "chat"
             },
             {
-              "outputKey": "report",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_5", "leftValue": "={{ $json.type }}", "rightValue": "report", "operator": { "type": "string", "operation": "equals" } }]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r5", "leftValue": "={{ $json.type }}", "rightValue": "refresh", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "refresh"
             },
             {
-              "outputKey": "chat",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_6", "leftValue": "={{ $json.type }}", "rightValue": "chat", "operator": { "type": "string", "operation": "equals" } }]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r6", "leftValue": "={{ $json.type }}", "rightValue": "report", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "report"
             },
             {
-              "outputKey": "reports_list",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_7", "leftValue": "={{ $json.type }}", "rightValue": "reports", "operator": { "type": "string", "operation": "equals" } }]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r7", "leftValue": "={{ $json.type }}", "rightValue": "competitor_add_url", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "competitor_add_url"
             },
             {
-              "outputKey": "competitor_url",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_8", "leftValue": "={{ $json.type }}", "rightValue": "competitor_add_url", "operator": { "type": "string", "operation": "equals" } }]
-              }
-            },
-            {
-              "outputKey": "competitor_location",
-              "renameOutput": true,
-              "conditions": {
-                "combinator": "and",
-                "options": { "caseSensitive": true },
-                "conditions": [{ "id": "sw_9", "leftValue": "={{ $json.type }}", "rightValue": "competitor_discover_location", "operator": { "type": "string", "operation": "equals" } }]
-              }
+              "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "r8", "leftValue": "={{ $json.type }}", "rightValue": "competitor_discover_location", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
+              "renameOutput": true, "outputKey": "competitor_discover_location"
             }
           ]
         },
@@ -121,819 +99,619 @@
     },
 
     {
-      "id": "n_resp_onboard",
+      "id": "res-onb",
       "name": "Respond: Onboarding",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [460, -200],
+      "position": [960, -600],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify({ user_id: 'new', status: 'processing' }) }}", "options": {} }
+    },
+
+    {
+      "id": "if-ana",
+      "name": "Latest or History?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [960, -380],
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ user_id: $json.business && $json.business.gmail ? $json.business.gmail : 'new_user', status: 'processing' }) }}",
+        "conditions": { "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 }, "conditions": [{ "id": "c1", "leftValue": "={{ $json.action }}", "rightValue": "latest", "operator": { "type": "string", "operation": "equals" } }], "combinator": "and" },
         "options": {}
       }
     },
 
     {
-      "id": "n_http_latest",
-      "name": "Supabase: Get Latest Analysis",
+      "id": "http-ana-l",
+      "name": "Supabase: Latest Analysis",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [460, -80],
+      "typeVersion": 4.2,
+      "position": [1200, -480],
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/analyses?user_id=eq.{{ $json.user_id }}&order=run_date.desc&limit=1",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/analyses?user_id=eq.' + $('Route by Type').first().json.user_id + '&order=run_date.desc&limit=1&select=*' }}",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }] },
         "options": {}
       }
     },
 
     {
-      "id": "n_code_latest",
-      "name": "Format: Latest Analysis",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, -80],
+      "id": "http-ana-h",
+      "name": "Supabase: Analysis History",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, -300],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const rows = items.map(i => i.json);\nconst row = rows[0];\nif (!row) return [{ json: { error: 'No analysis found' } }];\nconst analysis = {\n  id: row.id,\n  run_date: row.run_date,\n  status: row.status || 'complete',\n  summary: row.summary || '',\n  comparisons: row.comparisons || [],\n  suggestions: row.suggestions || [],\n  competitors_scouted: row.competitors_scouted || []\n};\nreturn [{ json: analysis }];"
+        "method": "GET",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/analyses?user_id=eq.' + $('Route by Type').first().json.user_id + '&order=run_date.desc&limit=30&select=id,run_date,status,summary,comparisons,suggestions' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }] },
+        "options": {}
       }
     },
 
     {
-      "id": "n_resp_latest",
-      "name": "Respond: Latest Analysis",
+      "id": "res-ana",
+      "name": "Respond: Analysis",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [900, -80],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      }
+      "position": [1440, -380],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify(Array.isArray($json) && $json.length > 0 ? $json[0] : ($json || null)) }}", "options": {} }
     },
 
     {
-      "id": "n_http_history",
-      "name": "Supabase: Get Analysis History",
+      "id": "http-rp",
+      "name": "Supabase: Get Reports",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [460, 40],
+      "typeVersion": 4.2,
+      "position": [960, -100],
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/analyses?user_id=eq.{{ $json.user_id }}&order=run_date.desc&limit=30",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/reports?user_id=eq.' + $json.user_id + '&order=sent_at.desc&select=id,sent_at,sent_to,status,analysis_id' }}",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }] },
         "options": {}
       }
     },
 
     {
-      "id": "n_code_history",
-      "name": "Format: History Array",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 40],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const rows = items.map(i => i.json);\nreturn rows.map(row => ({ json: {\n  id: row.id,\n  run_date: row.run_date,\n  status: row.status || 'complete',\n  summary: row.summary || '',\n  undercut_count: (row.comparisons || []).filter(c => c.status === 'undercut').length,\n  optimal_count: (row.comparisons || []).filter(c => c.status === 'optimal').length\n}}));"
-      }
-    },
-
-    {
-      "id": "n_resp_history",
-      "name": "Respond: Analysis History",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [900, 40],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify(items.map(i => i.json)) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_http_products",
-      "name": "Supabase: Get Products",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [460, 200],
-      "parameters": {
-        "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/products?user_id=eq.{{ $json.user_id }}&order=created_at",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_http_competitors",
-      "name": "Supabase: Get Competitors",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [680, 200],
-      "parameters": {
-        "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/competitors?user_id=eq.{{ $('Webhook').first().json.user_id }}&order=created_at",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_http_user",
-      "name": "Supabase: Get User",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [900, 200],
-      "parameters": {
-        "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/users?id=eq.{{ $('Webhook').first().json.user_id }}&limit=1",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_code_refresh_prep",
-      "name": "Build AI Prompt",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1120, 200],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const products = $('Supabase: Get Products').all().map(i => i.json);\nconst competitors = $('Supabase: Get Competitors').all().map(i => i.json);\nconst userRow = $('Supabase: Get User').first().json;\n\nconst user = {\n  company: userRow.company_name || 'My Business',\n  type: userRow.business_type || 'Retail',\n  location: userRow.location || 'India'\n};\n\nconst productLines = products.map(p =>\n  `- ${p.name}: ₹${p.price}, Stock: ${p.stock || 0}, Type: ${p.type || 'General'}`\n).join('\\n') || '- No products found';\n\nconst competitorLines = competitors.map(c =>\n  `- ${c.name} (${c.website || 'no website'})`\n).join('\\n') || '- No competitors tracked';\n\nconst today = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' });\n\nconst prompt = `You are a market intelligence analyst for an Indian retail business.\n\nBUSINESS: ${user.company} | Type: ${user.type} | Location: ${user.location}\n\nMY PRODUCTS:\n${productLines}\n\nTRACKED COMPETITORS:\n${competitorLines}\n\nTask: Generate a realistic competitive pricing analysis. For each product, simulate a plausible competitor price based on typical market rates for ${user.type} businesses in India. Consider that competition is usually within ±25% of listed price.\n\nReturn ONLY valid JSON (no markdown, no explanation) in exactly this structure:\n{\n  \"summary\": \"2-3 sentence overview of market conditions and key threats/opportunities\",\n  \"comparisons\": [\n    {\n      \"id\": 1,\n      \"my_product\": \"Product Name\",\n      \"my_price\": 1234,\n      \"my_stock\": 45,\n      \"competitor\": \"Competitor Name\",\n      \"competitor_price\": 1150,\n      \"diff\": 84,\n      \"status\": \"undercut\",\n      \"trend\": \"down\"\n    }\n  ],\n  \"suggestions\": [\n    {\n      \"id\": 1,\n      \"priority\": \"high\",\n      \"icon\": \"trending-down\",\n      \"title\": \"Short action title\",\n      \"body\": \"Specific actionable advice for this business\",\n      \"impact\": \"Expected revenue or strategic impact\"\n    }\n  ],\n  \"competitors_scouted\": [\n    {\n      \"name\": \"Competitor Name\",\n      \"website\": \"website.com\",\n      \"products_tracked\": 5,\n      \"last_scraped\": \"Today ${today}\"\n    }\n  ]\n}\n\nRules:\n- status must be exactly one of: undercut (competitor cheaper), optimal (I am cheaper), tied (same price ±2%)\n- trend must be one of: up, down, flat\n- diff = my_price - competitor_price (positive means I am more expensive)\n- Generate 2-4 high-value suggestions specific to this business\n- Match each product to the most relevant competitor from the list\n- Return valid JSON only, no extra text`;\n\nreturn [{ json: { prompt, products, competitors, user, userId: $('Webhook').first().json.user_id } }];"
-      }
-    },
-
-    {
-      "id": "n_http_gemini_refresh",
-      "name": "Gemini: Generate Analysis",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [1340, 200],
-      "parameters": {
-        "method": "POST",
-        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GEMINI_API_KEY }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "Content-Type", "value": "application/json" }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ contents: [{ role: 'user', parts: [{ text: $json.prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 3000 } }) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_code_refresh_parse",
-      "name": "Parse AI Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [1560, 200],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const geminiOutput = $('Gemini: Generate Analysis').first().json;\nconst prepData = $('Build AI Prompt').first().json;\n\nlet rawText = '';\ntry {\n  rawText = geminiOutput.candidates[0].content.parts[0].text || '';\n} catch(e) {\n  console.log('Gemini parse error:', e.message);\n}\n\n// Strip markdown code blocks if present\nlet jsonStr = rawText.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n\nlet analysis;\ntry {\n  analysis = JSON.parse(jsonStr);\n} catch(e) {\n  // Fallback: build basic analysis from raw product data\n  const products = prepData.products || [];\n  const competitors = prepData.competitors || [];\n  analysis = {\n    summary: 'Analysis generated. Review your product pricing against local competitors.',\n    comparisons: products.slice(0, 5).map((p, i) => ({\n      id: i + 1,\n      my_product: p.name,\n      my_price: p.price || 0,\n      my_stock: p.stock || 0,\n      competitor: competitors[i % competitors.length]?.name || 'Competitor',\n      competitor_price: Math.round((p.price || 0) * (0.9 + Math.random() * 0.2)),\n      diff: 0,\n      status: 'optimal',\n      trend: 'flat'\n    })),\n    suggestions: [{\n      id: 1,\n      priority: 'medium',\n      icon: 'trending-up',\n      title: 'Review your pricing strategy',\n      body: 'Connect more competitors and run a fresh analysis for accurate insights.',\n      impact: 'Better market positioning'\n    }],\n    competitors_scouted: competitors.map(c => ({ name: c.name, website: c.website || '', products_tracked: 3, last_scraped: 'Today' }))\n  };\n}\n\n// Recalculate diff for all comparisons\nif (analysis.comparisons) {\n  analysis.comparisons = analysis.comparisons.map((c, i) => ({\n    ...c,\n    id: i + 1,\n    diff: (c.my_price || 0) - (c.competitor_price || 0)\n  }));\n}\n\nconst payload = {\n  user_id: prepData.userId,\n  run_date: new Date().toISOString(),\n  status: 'complete',\n  summary: analysis.summary || '',\n  comparisons: analysis.comparisons || [],\n  suggestions: analysis.suggestions || [],\n  competitors_scouted: analysis.competitors_scouted || []\n};\n\nreturn [{ json: payload }];"
-      }
-    },
-
-    {
-      "id": "n_http_save_analysis",
-      "name": "Supabase: Save Analysis",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [1780, 200],
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/analyses",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" },
-            { "name": "Prefer", "value": "return=representation" }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_resp_refresh",
-      "name": "Respond: Refresh Analysis",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [2000, 200],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_http_get_analysis_for_report",
-      "name": "Supabase: Get Analysis for Report",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [460, 420],
-      "parameters": {
-        "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/analyses?id=eq.{{ $json.analysis_id }}&limit=1",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_code_report_html",
-      "name": "Build Report Email HTML",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 420],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const row = items[0]?.json || {};\nconst analysis = {\n  summary: row.summary || 'No summary available.',\n  comparisons: row.comparisons || [],\n  suggestions: row.suggestions || []\n};\nconst email = $('Webhook').first().json.email || 'owner@example.com';\nconst userId = $('Webhook').first().json.user_id;\nconst analysisId = $('Webhook').first().json.analysis_id;\n\nconst date = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });\n\nconst statusColor = { undercut: '#ef4444', optimal: '#22c55e', tied: '#f59e0b' };\n\nconst compRows = analysis.comparisons.map(c => `\n  <tr>\n    <td style=\"padding:8px 12px;border-bottom:1px solid #f1f5f9\">${c.my_product}</td>\n    <td style=\"padding:8px 12px;border-bottom:1px solid #f1f5f9\">₹${c.my_price?.toLocaleString('en-IN')}</td>\n    <td style=\"padding:8px 12px;border-bottom:1px solid #f1f5f9\">${c.competitor}</td>\n    <td style=\"padding:8px 12px;border-bottom:1px solid #f1f5f9\">₹${c.competitor_price?.toLocaleString('en-IN')}</td>\n    <td style=\"padding:8px 12px;border-bottom:1px solid #f1f5f9\"><span style=\"color:${statusColor[c.status]||'#64748b'};font-weight:600;text-transform:capitalize\">${c.status}</span></td>\n  </tr>\n`).join('');\n\nconst suggCards = analysis.suggestions.map(s => `\n  <div style=\"background:${s.priority==='high'?'#fef2f2':s.priority==='medium'?'#fffbeb':'#f0fdf4'};border-left:4px solid ${s.priority==='high'?'#ef4444':s.priority==='medium'?'#f59e0b':'#22c55e'};padding:12px 16px;margin-bottom:10px;border-radius:0 8px 8px 0\">\n    <p style=\"margin:0 0 4px;font-weight:700;font-size:14px;color:#1e293b\">[${(s.priority||'').toUpperCase()}] ${s.title}</p>\n    <p style=\"margin:0 0 4px;font-size:13px;color:#475569\">${s.body}</p>\n    <p style=\"margin:0;font-size:12px;color:#94a3b8\">Expected impact: ${s.impact}</p>\n  </div>\n`).join('');\n\nconst html = `\n<!DOCTYPE html>\n<html><head><meta charset=\"UTF-8\"></head>\n<body style=\"font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc;padding:20px;margin:0\">\n<div style=\"max-width:640px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.1)\">\n  <div style=\"background:linear-gradient(135deg,#4f46e5,#7c3aed);padding:24px 28px\">\n    <h1 style=\"color:#fff;margin:0;font-size:22px\">Daily Market Intelligence Report</h1>\n    <p style=\"color:#c7d2fe;margin:6px 0 0;font-size:14px\">${date}</p>\n  </div>\n  <div style=\"padding:24px 28px\">\n    <h2 style=\"color:#1e293b;font-size:16px;margin-top:0\">Market Summary</h2>\n    <p style=\"color:#475569;line-height:1.6;background:#f8fafc;padding:14px;border-radius:8px\">${analysis.summary}</p>\n\n    <h2 style=\"color:#1e293b;font-size:16px;margin-top:24px\">Price Comparison</h2>\n    ${analysis.comparisons.length > 0 ? `\n    <table style=\"width:100%;border-collapse:collapse;font-size:13px\">\n      <thead><tr style=\"background:#f1f5f9\">\n        <th style=\"padding:10px 12px;text-align:left;color:#64748b\">My Product</th>\n        <th style=\"padding:10px 12px;text-align:left;color:#64748b\">My Price</th>\n        <th style=\"padding:10px 12px;text-align:left;color:#64748b\">Competitor</th>\n        <th style=\"padding:10px 12px;text-align:left;color:#64748b\">Their Price</th>\n        <th style=\"padding:10px 12px;text-align:left;color:#64748b\">Status</th>\n      </tr></thead>\n      <tbody>${compRows}</tbody>\n    </table>` : '<p style=\"color:#94a3b8\">No comparison data available.</p>'}\n\n    <h2 style=\"color:#1e293b;font-size:16px;margin-top:24px\">AI Recommendations</h2>\n    ${suggCards || '<p style=\"color:#94a3b8\">No suggestions available.</p>'}\n  </div>\n  <div style=\"background:#f8fafc;padding:16px 28px;text-align:center\">\n    <p style=\"margin:0;font-size:12px;color:#94a3b8\">Market Intelligence Bot &bull; Auto-generated report</p>\n  </div>\n</div>\n</body></html>`;\n\nreturn [{ json: { html, email, userId, analysisId, date } }];"
-      }
-    },
-
-    {
-      "id": "n_gmail_send",
-      "name": "Gmail: Send Report",
-      "type": "n8n-nodes-base.gmail",
-      "typeVersion": 2.1,
-      "position": [900, 420],
-      "credentials": {
-        "gmailOAuth2": {
-          "id": "REPLACE_WITH_YOUR_GMAIL_CREDENTIAL_ID",
-          "name": "Gmail account"
-        }
-      },
-      "parameters": {
-        "sendTo": "={{ $json.email }}",
-        "subject": "=Daily Market Report — {{ $json.date }}",
-        "emailType": "html",
-        "message": "={{ $json.html }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_http_save_report",
-      "name": "Supabase: Save Report Log",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [1120, 420],
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/reports",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" },
-            { "name": "Prefer", "value": "return=representation" }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ user_id: $json.userId, analysis_id: $json.analysisId, sent_to: $json.email, status: 'sent' }) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_resp_report",
-      "name": "Respond: Report Sent",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1340, 420],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ status: 'sent', message: 'Report sent to ' + $('Build Report Email HTML').first().json.email }) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_code_chat_prep",
-      "name": "Build Chat Prompt",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [460, 600],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const data = $('Webhook').first().json;\nconst message = data.message || '';\nconst history = data.history || [];\n\nconst contents = history.map(m => ({\n  role: m.role === 'user' ? 'user' : 'model',\n  parts: [{ text: m.text }]\n}));\n\ncontents.push({ role: 'user', parts: [{ text: message }] });\n\nreturn [{ json: { contents, message } }];"
-      }
-    },
-
-    {
-      "id": "n_http_gemini_chat",
-      "name": "Gemini: Chat Reply",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [680, 600],
-      "parameters": {
-        "method": "POST",
-        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GEMINI_API_KEY }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "Content-Type", "value": "application/json" }
-          ]
-        },
-        "sendBody": true,
-        "contentType": "raw",
-        "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ contents: $json.contents, generationConfig: { temperature: 0.7, maxOutputTokens: 1024 } }) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_code_chat_extract",
-      "name": "Extract Chat Reply",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [900, 600],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const gemini = items[0]?.json;\nlet reply = 'Sorry, I could not process your request right now.';\ntry {\n  reply = gemini.candidates[0].content.parts[0].text || reply;\n} catch(e) {}\nreturn [{ json: { reply: reply.trim() } }];"
-      }
-    },
-
-    {
-      "id": "n_resp_chat",
-      "name": "Respond: Chat Reply",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [1120, 600],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify({ reply: $json.reply }) }}",
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_http_reports_list",
-      "name": "Supabase: Get Reports List",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [460, 760],
-      "parameters": {
-        "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/reports?user_id=eq.{{ $json.user_id }}&order=created_at.desc&limit=30",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
-        "options": {}
-      }
-    },
-
-    {
-      "id": "n_code_reports_format",
-      "name": "Format Reports List",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 760],
-      "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const rows = items.map(i => i.json);\nreturn rows.map(row => ({ json: {\n  id: row.id,\n  date: new Date(row.created_at).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }),\n  email: row.sent_to,\n  status: row.status || 'sent'\n}}));"
-      }
-    },
-
-    {
-      "id": "n_resp_reports",
+      "id": "res-rp",
       "name": "Respond: Reports List",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [900, 760],
+      "position": [1200, -100],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify(($json || []).map(r => ({ id: r.id, date: r.sent_at, email: r.sent_to, status: r.status }))) }}", "options": {} }
+    },
+
+    {
+      "id": "agent-chat",
+      "name": "AI Chat Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [960, 160],
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify(items.map(i => i.json)) }}",
+        "promptType": "define",
+        "text": "={{ 'You are a market intelligence assistant for a small business owner in India. Use ₹ for prices. Be helpful and practical.\\n\\nPrevious conversation:\\n' + (($json.history || []).map(m => (m.role === 'user' ? 'User: ' : 'Assistant: ') + m.text).join('\\n') || 'None') + '\\n\\nCurrent question: ' + $json.message }}",
         "options": {}
       }
     },
 
     {
-      "id": "n_http_scrape_url",
+      "id": "gmn-chat",
+      "name": "Gemini for Chat",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [960, 340],
+      "credentials": { "googleGeminiApi": { "id": "gemini-cred", "name": "Google Gemini API" } },
+      "parameters": { "modelName": "models/gemini-1.5-flash", "options": { "maxOutputTokens": 1024 } }
+    },
+
+    {
+      "id": "set-chat",
+      "name": "Format Chat Reply",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [1200, 160],
+      "parameters": { "mode": "manual", "assignments": { "assignments": [{ "id": "r1", "name": "reply", "value": "={{ $json.output }}", "type": "string" }] }, "options": {} }
+    },
+
+    {
+      "id": "res-chat",
+      "name": "Respond: Chat",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1440, 160],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify({ reply: $json.reply }) }}", "options": {} }
+    },
+
+    {
+      "id": "http-prod",
+      "name": "Supabase: Get Products",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 480],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/products?user_id=eq.' + $json.user_id + '&select=name,type,price,stock' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }] },
+        "options": {}
+      }
+    },
+
+    {
+      "id": "http-comp",
+      "name": "Supabase: Get Competitors",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1200, 480],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/competitors?user_id=eq.' + $('Route by Type').first().json.user_id + '&select=name,website,location' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }] },
+        "options": {}
+      }
+    },
+
+    {
+      "id": "code-prompt",
+      "name": "Build Analysis Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1440, 480],
+      "parameters": {
+        "jsCode": "const uid = $('Route by Type').first().json.user_id;\nconst products = $('Supabase: Get Products').all().map(i => i.json);\nconst competitors = $('Supabase: Get Competitors').all().map(i => i.json);\n\nconst pList = products.length ? products.map(p => `- ${p.name}: ₹${p.price}, Stock: ${p.stock || 'N/A'}`).join('\\n') : 'No products added yet';\nconst cList = competitors.length ? competitors.map(c => `- ${c.name} (${c.website || 'no website'})`).join('\\n') : 'No competitors added yet';\n\nconst prompt = `You are a market intelligence AI for small businesses in India.\\n\\nMY PRODUCTS:\\n${pList}\\n\\nMY COMPETITORS:\\n${cList}\\n\\nReturn ONLY raw JSON with no markdown and no code blocks:\\n{\"summary\":\"2-3 sentence insight\",\"comparisons\":[{\"my_product\":\"Name\",\"my_price\":999,\"competitor\":\"CompName\",\"competitor_price\":899,\"status\":\"undercut\"}],\"suggestions\":[{\"priority\":\"high\",\"title\":\"Title\",\"body\":\"Advice\",\"impact\":\"+10% revenue\"}],\"competitors_scouted\":[]}`;\n\nreturn [{ json: { prompt, user_id: uid } }];"
+      }
+    },
+
+    {
+      "id": "agent-ref",
+      "name": "Gemini: Analyze Market",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [1680, 480],
+      "parameters": { "promptType": "define", "text": "={{ $json.prompt }}", "options": {} }
+    },
+
+    {
+      "id": "gmn-ref",
+      "name": "Gemini for Analysis",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [1680, 660],
+      "credentials": { "googleGeminiApi": { "id": "gemini-cred", "name": "Google Gemini API" } },
+      "parameters": { "modelName": "models/gemini-1.5-flash", "options": { "maxOutputTokens": 2048 } }
+    },
+
+    {
+      "id": "code-parse",
+      "name": "Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1920, 480],
+      "parameters": {
+        "jsCode": "const uid = $('Build Analysis Prompt').first().json.user_id;\nconst raw = $json.output || '{}';\nlet analysis;\ntry {\n  const cleaned = raw.replace(/```json\\s*/gi, '').replace(/```\\s*/g, '').trim();\n  analysis = JSON.parse(cleaned);\n} catch (e) {\n  analysis = { summary: raw.substring(0, 400) || 'Analysis complete.', comparisons: [], suggestions: [{ priority: 'high', title: 'Retry', body: 'AI response could not be parsed. Please refresh again.', impact: 'N/A' }], competitors_scouted: [] };\n}\nreturn [{ json: { user_id: uid, run_date: new Date().toISOString(), status: 'complete', summary: analysis.summary || '', comparisons: analysis.comparisons || [], suggestions: analysis.suggestions || [], competitors_scouted: analysis.competitors_scouted || [] } }];"
+      }
+    },
+
+    {
+      "id": "http-save-ana",
+      "name": "Supabase: Save Analysis",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2160, 480],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/analyses' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }, { "name": "Content-Type", "value": "application/json" }, { "name": "Prefer", "value": "return=representation" }] },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ user_id: $json.user_id, run_date: $json.run_date, status: $json.status, summary: $json.summary, comparisons: $json.comparisons, suggestions: $json.suggestions, competitors_scouted: $json.competitors_scouted }) }}",
+        "options": {}
+      }
+    },
+
+    {
+      "id": "res-ref",
+      "name": "Respond: Refresh",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [2400, 480],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify({ status: 'complete', id: ($json[0] || $json).id || null, summary: $('Parse AI Response').first().json.summary, comparisons: $('Parse AI Response').first().json.comparisons, suggestions: $('Parse AI Response').first().json.suggestions, competitors_scouted: $('Parse AI Response').first().json.competitors_scouted }) }}", "options": {} }
+    },
+
+    {
+      "id": "http-ga",
+      "name": "Supabase: Get Analysis for Report",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 820],
+      "parameters": {
+        "method": "GET",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/analyses?id=eq.' + $json.analysis_id + '&select=*' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }] },
+        "options": {}
+      }
+    },
+
+    {
+      "id": "code-email",
+      "name": "Build Email HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 820],
+      "parameters": {
+        "jsCode": "const req = $('Route by Type').first().json;\nconst rawAna = $('Supabase: Get Analysis for Report').first().json;\nconst analysis = Array.isArray(rawAna) ? rawAna[0] : rawAna;\n\nconst sc = s => s === 'undercut' ? '#e53e3e' : s === 'optimal' ? '#38a169' : '#94a3b8';\nconst rows = (analysis.comparisons || []).map(c => `<tr><td style='padding:8px;border:1px solid #e2e8f0'>${c.my_product}</td><td style='padding:8px;border:1px solid #e2e8f0'>&#8377;${c.my_price}</td><td style='padding:8px;border:1px solid #e2e8f0'>${c.competitor}</td><td style='padding:8px;border:1px solid #e2e8f0'>&#8377;${c.competitor_price}</td><td style='padding:8px;border:1px solid #e2e8f0;color:${sc(c.status)}'>${c.status}</td></tr>`).join('');\nconst suggs = (analysis.suggestions || []).map(s => `<li style='margin-bottom:8px'><strong>[${(s.priority||'').toUpperCase()}]</strong> ${s.title}: ${s.body}</li>`).join('');\nconst html = `<html><body style='font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px'><h2 style='color:#4f46e5'>&#128202; Market Intelligence Report</h2><p style='color:#64748b'>${new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p><hr style='border:none;border-top:1px solid #e2e8f0;margin:16px 0'><h3>Summary</h3><p>${analysis.summary||'No summary.'}</p><h3>Product Comparison</h3><table style='width:100%;border-collapse:collapse;font-size:14px'><tr style='background:#f8fafc;font-weight:600'><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Product</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Your Price</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Competitor</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Their Price</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Status</th></tr>${rows||'<tr><td colspan=\"5\" style=\"padding:12px;text-align:center;color:#94a3b8\">No data yet</td></tr>'}</table><h3>Recommendations</h3><ul style='padding-left:20px'>${suggs||'<li>No suggestions yet.</li>'}</ul><p style='color:#94a3b8;font-size:12px;margin-top:24px'>Powered by MarketLensAI</p></body></html>`;\n\nreturn [{ json: { html, recipient: req.email, analysis_id: req.analysis_id, user_id: req.user_id, subject: '&#128202; Daily Market Intelligence &#8212; ' + new Date().toLocaleDateString('en-IN') } }];"
+      }
+    },
+
+    {
+      "id": "gmail001",
+      "name": "Send Gmail Report",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1440, 820],
+      "credentials": { "gmailOAuth2": { "id": "gmail-cred", "name": "Gmail Account" } },
+      "parameters": { "sendTo": "={{ $json.recipient }}", "subject": "={{ $json.subject }}", "message": "={{ $json.html }}", "options": { "emailType": "html" } }
+    },
+
+    {
+      "id": "http-save-rep",
+      "name": "Supabase: Save Report Record",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1680, 820],
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Config').first().json.supabase_url + '/rest/v1/reports' }}",
+        "sendHeaders": true,
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "={{ $('Config').first().json.supabase_key }}" }, { "name": "Authorization", "value": "={{ 'Bearer ' + $('Config').first().json.supabase_key }}" }, { "name": "Content-Type", "value": "application/json" }, { "name": "Prefer", "value": "return=representation" }] },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ JSON.stringify({ user_id: $('Build Email HTML').first().json.user_id, analysis_id: $('Build Email HTML').first().json.analysis_id, sent_to: $('Build Email HTML').first().json.recipient, sent_at: new Date().toISOString(), status: 'sent' }) }}",
+        "options": {}
+      }
+    },
+
+    {
+      "id": "res-rep",
+      "name": "Respond: Report Sent",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1920, 820],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify({ status: 'sent', message: 'Report sent to ' + $('Build Email HTML').first().json.recipient }) }}", "options": {} }
+    },
+
+    {
+      "id": "http-scrape",
       "name": "Scrape Competitor URL",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [460, 920],
+      "typeVersion": 4.2,
+      "position": [960, 1120],
       "parameters": {
         "method": "GET",
-        "url": "={{ $json.url.startsWith('http') ? $json.url : 'https://' + $json.url }}",
+        "url": "={{ $json.url }}",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "User-Agent", "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
-          ]
-        },
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text"
-            }
-          },
-          "timeout": 10000
-        }
+        "headerParameters": { "parameters": [{ "name": "User-Agent", "value": "Mozilla/5.0 (compatible; MarketBot/1.0)" }] },
+        "options": { "redirect": { "redirect": { "maxRedirects": 3 } }, "timeout": 10000 }
       }
     },
 
     {
-      "id": "n_code_url_extract",
-      "name": "Extract Competitor Info from HTML",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [680, 920],
+      "id": "agent-ext",
+      "name": "Extract Business Name",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [1200, 1120],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const html = items[0]?.json?.data || items[0]?.json || '';\nconst url = $('Webhook').first().json.url || '';\nconst domain = url.replace(/https?:\\/\\/(www\\.)?/, '').split('/')[0];\nconst name = domain.split('.')[0].replace(/-/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase());\n\n// Extract title from HTML for better name\nlet betterName = name;\nconst titleMatch = String(html).match(/<title[^>]*>([^<]+)<\\/title>/i);\nif (titleMatch) {\n  const rawTitle = titleMatch[1].trim().split(/[|\\-–]/)[0].trim();\n  if (rawTitle.length > 2 && rawTitle.length < 60) {\n    betterName = rawTitle;\n  }\n}\n\nreturn [{ json: { competitor: { name: betterName, website: domain, source: 'url' } } }];"
-      }
-    },
-
-    {
-      "id": "n_resp_competitor_url",
-      "name": "Respond: Competitor from URL",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [900, 920],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
+        "promptType": "define",
+        "text": "={{ 'Extract only the business name from this website content. Return ONLY valid JSON with no other text: {\"name\": \"Business Name\"}\\n\\nURL: ' + $('Route by Type').first().json.url + '\\n\\nPage content:\\n' + String($json.data || $json.body || '').substring(0, 1500) }}",
         "options": {}
       }
     },
 
     {
-      "id": "n_code_discover_location",
-      "name": "Discover Competitors by Location",
+      "id": "gmn-ext",
+      "name": "Gemini for Extraction",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [1200, 1300],
+      "credentials": { "googleGeminiApi": { "id": "gemini-cred", "name": "Google Gemini API" } },
+      "parameters": { "modelName": "models/gemini-1.5-flash", "options": { "maxOutputTokens": 100 } }
+    },
+
+    {
+      "id": "code-cu",
+      "name": "Format Competitor URL Response",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 1080],
+      "position": [1440, 1120],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const data = $('Webhook').first().json;\nconst location = data.location || 'India';\nconst businessType = data.business_type || 'retail';\n\n// This branch requires a SerpAPI or Google Places key.\n// Set SERP_API_KEY in n8n environment variables to enable real search.\n// Without it, we return region-specific mock competitors.\n\nconst mockCompetitors = [\n  { name: 'Local Textile Hub', website: 'localtextilehub.in', location, distance: '0.8 km' },\n  { name: 'City Fashion House', website: 'cityfashionhouse.com', location, distance: '1.2 km' },\n  { name: 'National Handlooms', website: 'nationalhandlooms.com', location, distance: '1.5 km' },\n  { name: 'Ethnic Weaves', website: 'ethnicweaves.in', location, distance: '2.1 km' },\n  { name: 'Style Palace', website: 'stylepalace.in', location, distance: '2.4 km' },\n  { name: `${businessType.charAt(0).toUpperCase()+businessType.slice(1)} Mart`, website: 'retailmart.in', location, distance: '3.0 km' },\n];\n\nreturn [{ json: { competitors: mockCompetitors } }];"
+        "jsCode": "const rawUrl = $('Route by Type').first().json.url;\nconst raw = $json.output || '';\nlet name = 'Unknown Business';\ntry {\n  const cleaned = raw.replace(/```json\\s*/gi, '').replace(/```\\s*/g, '').trim();\n  name = JSON.parse(cleaned).name || 'Unknown Business';\n} catch (e) {\n  try { name = new URL(rawUrl).hostname.replace('www.', ''); } catch (e2) { name = rawUrl; }\n}\nlet website = rawUrl;\ntry { website = new URL(rawUrl).hostname.replace('www.', ''); } catch (e) {}\nreturn [{ json: { competitor: { name, website, source: 'url' } } }];"
       }
     },
 
     {
-      "id": "n_resp_location",
-      "name": "Respond: Competitors by Location",
+      "id": "res-cu",
+      "name": "Respond: Competitor URL",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.1,
-      "position": [680, 1080],
+      "position": [1680, 1120],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify($json) }}", "options": {} }
+    },
+
+    {
+      "id": "code-disc",
+      "name": "Build Competitor Discovery Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [960, 1440],
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {}
+        "jsCode": "// Returns mock results. To enable real search: add SerpAPI HTTP node before this.\n// SerpAPI: GET https://serpapi.com/search.json?q=BUSINESS_TYPE+near+LOCATION&api_key=KEY\nconst loc = $json.location || 'your area';\nconst bt  = $json.business_type || 'business';\nreturn [{ json: { competitors: [\n  { name: `${bt} Mart — ${loc}`,   website: '', location: loc, distance: '0.5 km' },\n  { name: `${loc} ${bt} Store`,     website: '', location: loc, distance: '1.1 km' },\n  { name: `New ${bt} Hub`,          website: '', location: loc, distance: '2.3 km' }\n] } }];"
       }
     },
 
     {
-      "id": "n_schedule",
-      "name": "Daily Schedule",
+      "id": "res-disc",
+      "name": "Respond: Discover Competitors",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1200, 1440],
+      "parameters": { "respondWith": "json", "responseBody": "={{ JSON.stringify($json) }}", "options": {} }
+    },
+
+    {
+      "id": "note-sched",
+      "name": "Daily Scheduler Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [0, 1680],
+      "parameters": {
+        "content": "## ⏰ Daily Scheduler\nRuns every day at 6:00 AM IST (00:30 UTC).\n\n**Update all HTTP nodes below** — replace `YOUR_PROJECT_ID` and `YOUR_ANON_KEY` with your Supabase values.",
+        "width": 340,
+        "height": 110,
+        "color": 3
+      }
+    },
+
+    {
+      "id": "sched001",
+      "name": "Daily Scheduler",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [0, 1200],
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "cronExpression",
-              "expression": "0 30 0 * * *"
-            }
-          ]
-        }
-      }
+      "position": [260, 1820],
+      "parameters": { "rule": { "interval": [{ "field": "cronExpression", "expression": "0 30 0 * * *" }] }, "options": {} }
     },
 
     {
-      "id": "n_http_all_users",
+      "id": "http-users",
       "name": "Supabase: Get All Users",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [220, 1200],
+      "typeVersion": 4.2,
+      "position": [480, 1820],
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/users?select=id,company_name,gmail",
+        "url": "=https://YOUR_PROJECT_ID.supabase.co/rest/v1/users?select=id,company_name,gmail",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }] },
         "options": {}
       }
     },
 
     {
-      "id": "n_loop_users",
-      "name": "Loop Over Users",
+      "id": "split001",
+      "name": "Loop Each User",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
-      "position": [440, 1200],
-      "parameters": {
-        "batchSize": 1,
-        "options": {}
-      }
+      "position": [720, 1820],
+      "parameters": { "batchSize": 1, "options": {} }
     },
 
     {
-      "id": "n_http_daily_products",
+      "id": "http-dly-prod",
       "name": "Daily: Get Products",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [660, 1200],
+      "typeVersion": 4.2,
+      "position": [960, 1820],
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/products?user_id=eq.{{ $json.id }}&order=created_at",
+        "url": "={{ 'https://YOUR_PROJECT_ID.supabase.co/rest/v1/products?user_id=eq.' + $json.id + '&select=name,type,price,stock' }}",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }] },
         "options": {}
       }
     },
 
     {
-      "id": "n_http_daily_competitors",
+      "id": "http-dly-comp",
       "name": "Daily: Get Competitors",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [880, 1200],
+      "typeVersion": 4.2,
+      "position": [1200, 1820],
       "parameters": {
         "method": "GET",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/competitors?user_id=eq.{{ $('Loop Over Users').item.json.id }}&order=created_at",
+        "url": "={{ 'https://YOUR_PROJECT_ID.supabase.co/rest/v1/competitors?user_id=eq.' + $('Loop Each User').item.json.id + '&select=name,website' }}",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }] },
         "options": {}
       }
     },
 
     {
-      "id": "n_code_daily_prep",
-      "name": "Daily: Build AI Prompt",
+      "id": "code-dly-prompt",
+      "name": "Daily: Build Prompt",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1100, 1200],
+      "position": [1440, 1820],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const currentUser = $('Loop Over Users').item.json;\nconst products = $('Daily: Get Products').all().map(i => i.json);\nconst competitors = $('Daily: Get Competitors').all().map(i => i.json);\n\nconst today = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' });\n\nconst productLines = products.map(p => `- ${p.name}: ₹${p.price}, Stock: ${p.stock || 0}`).join('\\n') || '- No products';\nconst competitorLines = competitors.map(c => `- ${c.name}`).join('\\n') || '- No competitors';\n\nconst prompt = `Competitive pricing analysis for ${currentUser.company_name || 'a retail business'}.\n\nMY PRODUCTS:\\n${productLines}\\n\\nCOMPETITORS:\\n${competitorLines}\\n\\nGenerate realistic market analysis. Return ONLY valid JSON:\\n{\"summary\":\"...\",\"comparisons\":[{\"id\":1,\"my_product\":\"...\",\"my_price\":0,\"my_stock\":0,\"competitor\":\"...\",\"competitor_price\":0,\"diff\":0,\"status\":\"optimal\",\"trend\":\"flat\"}],\"suggestions\":[{\"id\":1,\"priority\":\"medium\",\"icon\":\"trending-up\",\"title\":\"...\",\"body\":\"...\",\"impact\":\"...\"}],\"competitors_scouted\":[{\"name\":\"...\",\"website\":\"\",\"products_tracked\":3,\"last_scraped\":\"Today ${today}\"}]}`;\n\nreturn [{ json: { prompt, userId: currentUser.id, userEmail: currentUser.gmail, company: currentUser.company_name } }];"
+        "jsCode": "const user = $('Loop Each User').item.json;\nconst products = $('Daily: Get Products').all().map(i => i.json);\nconst competitors = $('Daily: Get Competitors').all().map(i => i.json);\nconst pList = products.length ? products.map(p => `- ${p.name}: ₹${p.price}, Stock: ${p.stock||'N/A'}`).join('\\n') : 'No products yet';\nconst cList = competitors.length ? competitors.map(c => `- ${c.name} (${c.website||'no website'})`).join('\\n') : 'No competitors yet';\nconst prompt = `Analyze the business data for ${user.company_name}. Return ONLY raw JSON (no markdown):\\n{\"summary\":\"...\",\"comparisons\":[{\"my_product\":\"...\",\"my_price\":0,\"competitor\":\"...\",\"competitor_price\":0,\"status\":\"undercut|optimal|no_data\"}],\"suggestions\":[{\"priority\":\"high|medium|low\",\"title\":\"...\",\"body\":\"...\",\"impact\":\"...\"}],\"competitors_scouted\":[]}\\n\\nMY PRODUCTS:\\n${pList}\\n\\nMY COMPETITORS:\\n${cList}`;\nreturn [{ json: { prompt, user } }];"
       }
     },
 
     {
-      "id": "n_http_daily_gemini",
-      "name": "Daily: Gemini Analysis",
+      "id": "agent-dly",
+      "name": "Daily: AI Analysis",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [1680, 1820],
+      "parameters": { "promptType": "define", "text": "={{ $json.prompt }}", "options": {} }
+    },
+
+    {
+      "id": "gmn-dly",
+      "name": "Gemini Daily",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [1680, 2000],
+      "credentials": { "googleGeminiApi": { "id": "gemini-cred", "name": "Google Gemini API" } },
+      "parameters": { "modelName": "models/gemini-1.5-flash", "options": { "maxOutputTokens": 2048 } }
+    },
+
+    {
+      "id": "code-dly-parse",
+      "name": "Daily: Parse Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1920, 1820],
+      "parameters": {
+        "jsCode": "const user = $('Daily: Build Prompt').first().json.user;\nconst raw = $json.output || '{}';\nlet analysis;\ntry {\n  const cleaned = raw.replace(/```json\\s*/gi, '').replace(/```\\s*/g, '').trim();\n  analysis = JSON.parse(cleaned);\n} catch (e) {\n  analysis = { summary: raw.substring(0, 300), comparisons: [], suggestions: [], competitors_scouted: [] };\n}\nreturn [{ json: { user, analysis } }];"
+      }
+    },
+
+    {
+      "id": "http-dly-save",
+      "name": "Daily: Save Analysis",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [1320, 1200],
+      "typeVersion": 4.2,
+      "position": [2160, 1820],
       "parameters": {
         "method": "POST",
-        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{ $env.GEMINI_API_KEY }}",
+        "url": "=https://YOUR_PROJECT_ID.supabase.co/rest/v1/analyses",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "Content-Type", "value": "application/json" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }, { "name": "Content-Type", "value": "application/json" }, { "name": "Prefer", "value": "return=representation" }] },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify({ contents: [{ role: 'user', parts: [{ text: $json.prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 2048 } }) }}",
+        "body": "={{ JSON.stringify({ user_id: $json.user.id, run_date: new Date().toISOString(), status: 'complete', summary: $json.analysis.summary, comparisons: $json.analysis.comparisons, suggestions: $json.analysis.suggestions, competitors_scouted: $json.analysis.competitors_scouted }) }}",
         "options": {}
       }
     },
 
     {
-      "id": "n_code_daily_parse",
-      "name": "Daily: Parse & Save Analysis",
+      "id": "code-dly-email",
+      "name": "Daily: Build Email",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1540, 1200],
+      "position": [2400, 1820],
       "parameters": {
-        "mode": "runOnceForAllItems",
-        "jsCode": "const geminiOut = $('Daily: Gemini Analysis').first().json;\nconst prep = $('Daily: Build AI Prompt').first().json;\n\nlet rawText = '';\ntry { rawText = geminiOut.candidates[0].content.parts[0].text || ''; } catch(e) {}\n\nlet analysis = {};\ntry {\n  const jsonStr = rawText.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  analysis = JSON.parse(jsonStr);\n} catch(e) {\n  analysis = { summary: 'Daily analysis complete. Review your pricing.', comparisons: [], suggestions: [], competitors_scouted: [] };\n}\n\nconst payload = {\n  user_id: prep.userId,\n  run_date: new Date().toISOString(),\n  status: 'complete',\n  summary: analysis.summary || '',\n  comparisons: analysis.comparisons || [],\n  suggestions: analysis.suggestions || [],\n  competitors_scouted: analysis.competitors_scouted || []\n};\n\nreturn [{ json: { analysis: payload, userEmail: prep.userEmail, company: prep.company, userId: prep.userId } }];"
+        "jsCode": "const { user, analysis } = $('Daily: Parse Analysis').first().json;\nconst sc = s => s === 'undercut' ? '#e53e3e' : s === 'optimal' ? '#38a169' : '#94a3b8';\nconst rows = (analysis.comparisons||[]).map(c => `<tr><td style='padding:8px;border:1px solid #e2e8f0'>${c.my_product}</td><td style='padding:8px;border:1px solid #e2e8f0'>&#8377;${c.my_price}</td><td style='padding:8px;border:1px solid #e2e8f0'>${c.competitor}</td><td style='padding:8px;border:1px solid #e2e8f0'>&#8377;${c.competitor_price}</td><td style='padding:8px;border:1px solid #e2e8f0;color:${sc(c.status)}'>${c.status}</td></tr>`).join('');\nconst suggs = (analysis.suggestions||[]).map(s => `<li style='margin-bottom:8px'><strong>[${(s.priority||'').toUpperCase()}]</strong> ${s.title}: ${s.body}</li>`).join('');\nconst html = `<html><body style='font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px'><h2 style='color:#4f46e5'>&#128202; Daily Market Intelligence &#8212; ${user.company_name}</h2><p style='color:#64748b'>${new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})}</p><hr style='border:none;border-top:1px solid #e2e8f0;margin:16px 0'><h3>Summary</h3><p>${analysis.summary}</p><h3>Product Comparison</h3><table style='width:100%;border-collapse:collapse;font-size:14px'><tr style='background:#f8fafc;font-weight:600'><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Product</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Your Price</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Competitor</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Their Price</th><th style='padding:8px;border:1px solid #e2e8f0;text-align:left'>Status</th></tr>${rows}</table><h3>Recommendations</h3><ul style='padding-left:20px'>${suggs}</ul><p style='color:#94a3b8;font-size:12px;margin-top:24px'>Powered by MarketLensAI</p></body></html>`;\nconst subject = `&#128202; Daily Market Intelligence &#8212; ${user.company_name} &#8212; ${new Date().toLocaleDateString('en-IN')}`;\nreturn [{ json: { html, recipient: user.gmail, user, subject } }];"
       }
     },
 
     {
-      "id": "n_http_daily_save",
-      "name": "Daily: Save to Supabase",
+      "id": "gmail-dly",
+      "name": "Daily: Send Report Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [2640, 1820],
+      "credentials": { "gmailOAuth2": { "id": "gmail-cred", "name": "Gmail Account" } },
+      "parameters": { "sendTo": "={{ $json.recipient }}", "subject": "={{ $json.subject }}", "message": "={{ $json.html }}", "options": { "emailType": "html" } }
+    },
+
+    {
+      "id": "http-dly-rep",
+      "name": "Daily: Save Report Record",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.1,
-      "position": [1760, 1200],
+      "typeVersion": 4.2,
+      "position": [2880, 1820],
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.SUPABASE_URL }}/rest/v1/analyses",
+        "url": "=https://YOUR_PROJECT_ID.supabase.co/rest/v1/reports",
         "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            { "name": "apikey", "value": "={{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Authorization", "value": "=Bearer {{ $env.SUPABASE_ANON_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" },
-            { "name": "Prefer", "value": "return=representation" }
-          ]
-        },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }, { "name": "Content-Type", "value": "application/json" }] },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
-        "body": "={{ JSON.stringify($json.analysis) }}",
+        "body": "={{ JSON.stringify({ user_id: $('Daily: Build Email').first().json.user.id, sent_to: $('Daily: Build Email').first().json.recipient, sent_at: new Date().toISOString(), status: 'sent' }) }}",
         "options": {}
       }
+    },
+
+    {
+      "id": "noop001",
+      "name": "Next User",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [3120, 1820],
+      "parameters": {}
     }
 
   ],
 
   "connections": {
-    "Webhook": {
-      "main": [
-        [{ "node": "Route by Type", "type": "main", "index": 0 }]
-      ]
-    },
+    "Webhook":                               { "main": [[{ "node": "Config",                              "type": "main", "index": 0 }]] },
+    "Config":                                { "main": [[{ "node": "Route by Type",                       "type": "main", "index": 0 }]] },
     "Route by Type": {
       "main": [
-        [{ "node": "Respond: Onboarding", "type": "main", "index": 0 }],
-        [{ "node": "Supabase: Get Latest Analysis", "type": "main", "index": 0 }],
-        [{ "node": "Supabase: Get Analysis History", "type": "main", "index": 0 }],
-        [{ "node": "Supabase: Get Products", "type": "main", "index": 0 }],
-        [{ "node": "Supabase: Get Analysis for Report", "type": "main", "index": 0 }],
-        [{ "node": "Build Chat Prompt", "type": "main", "index": 0 }],
-        [{ "node": "Supabase: Get Reports List", "type": "main", "index": 0 }],
-        [{ "node": "Scrape Competitor URL", "type": "main", "index": 0 }],
-        [{ "node": "Discover Competitors by Location", "type": "main", "index": 0 }]
+        [{ "node": "Respond: Onboarding",                   "type": "main", "index": 0 }],
+        [{ "node": "Latest or History?",                    "type": "main", "index": 0 }],
+        [{ "node": "Supabase: Get Reports",                 "type": "main", "index": 0 }],
+        [{ "node": "AI Chat Agent",                         "type": "main", "index": 0 }],
+        [{ "node": "Supabase: Get Products",                "type": "main", "index": 0 }],
+        [{ "node": "Supabase: Get Analysis for Report",     "type": "main", "index": 0 }],
+        [{ "node": "Scrape Competitor URL",                 "type": "main", "index": 0 }],
+        [{ "node": "Build Competitor Discovery Response",   "type": "main", "index": 0 }]
       ]
     },
-    "Supabase: Get Latest Analysis": {
-      "main": [[{ "node": "Format: Latest Analysis", "type": "main", "index": 0 }]]
-    },
-    "Format: Latest Analysis": {
-      "main": [[{ "node": "Respond: Latest Analysis", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get Analysis History": {
-      "main": [[{ "node": "Format: History Array", "type": "main", "index": 0 }]]
-    },
-    "Format: History Array": {
-      "main": [[{ "node": "Respond: Analysis History", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get Products": {
-      "main": [[{ "node": "Supabase: Get Competitors", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get Competitors": {
-      "main": [[{ "node": "Supabase: Get User", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get User": {
-      "main": [[{ "node": "Build AI Prompt", "type": "main", "index": 0 }]]
-    },
-    "Build AI Prompt": {
-      "main": [[{ "node": "Gemini: Generate Analysis", "type": "main", "index": 0 }]]
-    },
-    "Gemini: Generate Analysis": {
-      "main": [[{ "node": "Parse AI Response", "type": "main", "index": 0 }]]
-    },
-    "Parse AI Response": {
-      "main": [[{ "node": "Supabase: Save Analysis", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Save Analysis": {
-      "main": [[{ "node": "Respond: Refresh Analysis", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get Analysis for Report": {
-      "main": [[{ "node": "Build Report Email HTML", "type": "main", "index": 0 }]]
-    },
-    "Build Report Email HTML": {
-      "main": [[{ "node": "Gmail: Send Report", "type": "main", "index": 0 }]]
-    },
-    "Gmail: Send Report": {
-      "main": [[{ "node": "Supabase: Save Report Log", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Save Report Log": {
-      "main": [[{ "node": "Respond: Report Sent", "type": "main", "index": 0 }]]
-    },
-    "Build Chat Prompt": {
-      "main": [[{ "node": "Gemini: Chat Reply", "type": "main", "index": 0 }]]
-    },
-    "Gemini: Chat Reply": {
-      "main": [[{ "node": "Extract Chat Reply", "type": "main", "index": 0 }]]
-    },
-    "Extract Chat Reply": {
-      "main": [[{ "node": "Respond: Chat Reply", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get Reports List": {
-      "main": [[{ "node": "Format Reports List", "type": "main", "index": 0 }]]
-    },
-    "Format Reports List": {
-      "main": [[{ "node": "Respond: Reports List", "type": "main", "index": 0 }]]
-    },
-    "Scrape Competitor URL": {
-      "main": [[{ "node": "Extract Competitor Info from HTML", "type": "main", "index": 0 }]]
-    },
-    "Extract Competitor Info from HTML": {
-      "main": [[{ "node": "Respond: Competitor from URL", "type": "main", "index": 0 }]]
-    },
-    "Discover Competitors by Location": {
-      "main": [[{ "node": "Respond: Competitors by Location", "type": "main", "index": 0 }]]
-    },
-    "Daily Schedule": {
-      "main": [[{ "node": "Supabase: Get All Users", "type": "main", "index": 0 }]]
-    },
-    "Supabase: Get All Users": {
-      "main": [[{ "node": "Loop Over Users", "type": "main", "index": 0 }]]
-    },
-    "Loop Over Users": {
+    "Latest or History?": {
       "main": [
-        [{ "node": "Daily: Get Products", "type": "main", "index": 0 }],
-        []
+        [{ "node": "Supabase: Latest Analysis",   "type": "main", "index": 0 }],
+        [{ "node": "Supabase: Analysis History",  "type": "main", "index": 0 }]
       ]
     },
-    "Daily: Get Products": {
-      "main": [[{ "node": "Daily: Get Competitors", "type": "main", "index": 0 }]]
-    },
-    "Daily: Get Competitors": {
-      "main": [[{ "node": "Daily: Build AI Prompt", "type": "main", "index": 0 }]]
-    },
-    "Daily: Build AI Prompt": {
-      "main": [[{ "node": "Daily: Gemini Analysis", "type": "main", "index": 0 }]]
-    },
-    "Daily: Gemini Analysis": {
-      "main": [[{ "node": "Daily: Parse & Save Analysis", "type": "main", "index": 0 }]]
-    },
-    "Daily: Parse & Save Analysis": {
-      "main": [[{ "node": "Daily: Save to Supabase", "type": "main", "index": 0 }]]
-    }
+    "Supabase: Latest Analysis":             { "main": [[{ "node": "Respond: Analysis",              "type": "main", "index": 0 }]] },
+    "Supabase: Analysis History":            { "main": [[{ "node": "Respond: Analysis",              "type": "main", "index": 0 }]] },
+    "Supabase: Get Reports":                 { "main": [[{ "node": "Respond: Reports List",           "type": "main", "index": 0 }]] },
+    "Gemini for Chat":                       { "ai_languageModel": [[{ "node": "AI Chat Agent",       "type": "ai_languageModel", "index": 0 }]] },
+    "AI Chat Agent":                         { "main": [[{ "node": "Format Chat Reply",               "type": "main", "index": 0 }]] },
+    "Format Chat Reply":                     { "main": [[{ "node": "Respond: Chat",                   "type": "main", "index": 0 }]] },
+    "Supabase: Get Products":                { "main": [[{ "node": "Supabase: Get Competitors",       "type": "main", "index": 0 }]] },
+    "Supabase: Get Competitors":             { "main": [[{ "node": "Build Analysis Prompt",           "type": "main", "index": 0 }]] },
+    "Build Analysis Prompt":                 { "main": [[{ "node": "Gemini: Analyze Market",          "type": "main", "index": 0 }]] },
+    "Gemini for Analysis":                   { "ai_languageModel": [[{ "node": "Gemini: Analyze Market", "type": "ai_languageModel", "index": 0 }]] },
+    "Gemini: Analyze Market":               { "main": [[{ "node": "Parse AI Response",               "type": "main", "index": 0 }]] },
+    "Parse AI Response":                     { "main": [[{ "node": "Supabase: Save Analysis",         "type": "main", "index": 0 }]] },
+    "Supabase: Save Analysis":               { "main": [[{ "node": "Respond: Refresh",                "type": "main", "index": 0 }]] },
+    "Supabase: Get Analysis for Report":     { "main": [[{ "node": "Build Email HTML",                "type": "main", "index": 0 }]] },
+    "Build Email HTML":                      { "main": [[{ "node": "Send Gmail Report",               "type": "main", "index": 0 }]] },
+    "Send Gmail Report":                     { "main": [[{ "node": "Supabase: Save Report Record",    "type": "main", "index": 0 }]] },
+    "Supabase: Save Report Record":          { "main": [[{ "node": "Respond: Report Sent",            "type": "main", "index": 0 }]] },
+    "Scrape Competitor URL":                 { "main": [[{ "node": "Extract Business Name",           "type": "main", "index": 0 }]] },
+    "Gemini for Extraction":                 { "ai_languageModel": [[{ "node": "Extract Business Name", "type": "ai_languageModel", "index": 0 }]] },
+    "Extract Business Name":                 { "main": [[{ "node": "Format Competitor URL Response",  "type": "main", "index": 0 }]] },
+    "Format Competitor URL Response":        { "main": [[{ "node": "Respond: Competitor URL",         "type": "main", "index": 0 }]] },
+    "Build Competitor Discovery Response":   { "main": [[{ "node": "Respond: Discover Competitors",   "type": "main", "index": 0 }]] },
+    "Daily Scheduler":                       { "main": [[{ "node": "Supabase: Get All Users",          "type": "main", "index": 0 }]] },
+    "Supabase: Get All Users":               { "main": [[{ "node": "Loop Each User",                  "type": "main", "index": 0 }]] },
+    "Loop Each User":                        { "main": [[{ "node": "Daily: Get Products",             "type": "main", "index": 0 }]] },
+    "Daily: Get Products":                   { "main": [[{ "node": "Daily: Get Competitors",          "type": "main", "index": 0 }]] },
+    "Daily: Get Competitors":                { "main": [[{ "node": "Daily: Build Prompt",             "type": "main", "index": 0 }]] },
+    "Daily: Build Prompt":                   { "main": [[{ "node": "Daily: AI Analysis",              "type": "main", "index": 0 }]] },
+    "Gemini Daily":                          { "ai_languageModel": [[{ "node": "Daily: AI Analysis",  "type": "ai_languageModel", "index": 0 }]] },
+    "Daily: AI Analysis":                    { "main": [[{ "node": "Daily: Parse Analysis",           "type": "main", "index": 0 }]] },
+    "Daily: Parse Analysis":                 { "main": [[{ "node": "Daily: Save Analysis",            "type": "main", "index": 0 }]] },
+    "Daily: Save Analysis":                  { "main": [[{ "node": "Daily: Build Email",              "type": "main", "index": 0 }]] },
+    "Daily: Build Email":                    { "main": [[{ "node": "Daily: Send Report Email",        "type": "main", "index": 0 }]] },
+    "Daily: Send Report Email":              { "main": [[{ "node": "Daily: Save Report Record",       "type": "main", "index": 0 }]] },
+    "Daily: Save Report Record":             { "main": [[{ "node": "Next User",                       "type": "main", "index": 0 }]] },
+    "Next User":                             { "main": [[{ "node": "Loop Each User",                  "type": "main", "index": 0 }]] }
   },
 
-  "settings": {
-    "executionOrder": "v1",
-    "saveManualExecutions": true,
-    "callerPolicy": "workflowsFromSameOwner",
-    "errorWorkflow": ""
-  },
-  "staticData": null,
-  "meta": {
-    "templateCredsSetupCompleted": false,
-    "instanceId": "market-intelligence-bot-001"
-  },
-  "pinData": {}
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "tags": []
 }
