@@ -50,6 +50,7 @@ c:\Multi-Agent Market Intelligence Bot
 │       ├── gemini.js                 # Gemini 1.5 Flash AI — chat with full business context
 │       └── supabase.js               # Supabase CRUD (products, competitors, analyses, reports)
 ├── supabase_schema.sql               # Database schema (5 tables with RLS)
+├── n8n_workflow.json                 # Importable n8n workflow (35+ nodes, all 8 routes wired)
 ├── .env                              # Environment variables (fill from .env.example)
 └── .env.example                      # Template for .env (all 4 required keys)
 ```
