@@ -495,9 +495,9 @@
       "position": [480, 1820],
       "parameters": {
         "method": "GET",
-        "url": "=https://YOUR_PROJECT_ID.supabase.co/rest/v1/users?select=id,company_name,gmail",
+        "url": "https://YOUR_PROJECT_ID.supabase.co/rest/v1/users?select=id,company_name,gmail",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }] },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "YOUR_ANON_KEY" }, { "name": "Authorization", "value": "Bearer YOUR_ANON_KEY" }] },
         "options": {}
       }
     },
@@ -521,7 +521,7 @@
         "method": "GET",
         "url": "={{ 'https://YOUR_PROJECT_ID.supabase.co/rest/v1/products?user_id=eq.' + $json.id + '&select=name,type,price,stock' }}",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }] },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "YOUR_ANON_KEY" }, { "name": "Authorization", "value": "Bearer YOUR_ANON_KEY" }] },
         "options": {}
       }
     },
@@ -536,7 +536,7 @@
         "method": "GET",
         "url": "={{ 'https://YOUR_PROJECT_ID.supabase.co/rest/v1/competitors?user_id=eq.' + $('Loop Each User').item.json.id + '&select=name,website' }}",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }] },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "YOUR_ANON_KEY" }, { "name": "Authorization", "value": "Bearer YOUR_ANON_KEY" }] },
         "options": {}
       }
     },
@@ -590,9 +590,9 @@
       "position": [2160, 1820],
       "parameters": {
         "method": "POST",
-        "url": "=https://YOUR_PROJECT_ID.supabase.co/rest/v1/analyses",
+        "url": "https://YOUR_PROJECT_ID.supabase.co/rest/v1/analyses",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }, { "name": "Content-Type", "value": "application/json" }, { "name": "Prefer", "value": "return=representation" }] },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "YOUR_ANON_KEY" }, { "name": "Authorization", "value": "Bearer YOUR_ANON_KEY" }, { "name": "Content-Type", "value": "application/json" }, { "name": "Prefer", "value": "return=representation" }] },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",
@@ -630,9 +630,9 @@
       "position": [2880, 1820],
       "parameters": {
         "method": "POST",
-        "url": "=https://YOUR_PROJECT_ID.supabase.co/rest/v1/reports",
+        "url": "https://YOUR_PROJECT_ID.supabase.co/rest/v1/reports",
         "sendHeaders": true,
-        "headerParameters": { "parameters": [{ "name": "apikey", "value": "=YOUR_ANON_KEY" }, { "name": "Authorization", "value": "=Bearer YOUR_ANON_KEY" }, { "name": "Content-Type", "value": "application/json" }] },
+        "headerParameters": { "parameters": [{ "name": "apikey", "value": "YOUR_ANON_KEY" }, { "name": "Authorization", "value": "Bearer YOUR_ANON_KEY" }, { "name": "Content-Type", "value": "application/json" }] },
         "sendBody": true,
         "contentType": "raw",
         "rawContentType": "application/json",

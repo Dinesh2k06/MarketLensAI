@@ -89,23 +89,37 @@ npm install
    VITE_GEMINI_API_KEY=your-key-here
    ```
 
-### 4. n8n Webhook Setup
+### 4. n8n Workflow Setup
 
-The frontend is already configured with:
+A complete importable workflow is included at `n8n_workflow.json`.
+
+**Import steps:**
+
+1. In n8n Cloud go to **Workflows → Import from file** and select `n8n_workflow.json`
+2. Open the **Config** node and replace both placeholder values:
+   - `YOUR_PROJECT_ID` → your Supabase project ID
+   - `YOUR_ANON_KEY` → your Supabase anon key
+3. Do the same replacements in the **Daily Scheduler** section HTTP nodes (5 nodes: Get All Users, Get Products, Get Competitors, Save Analysis, Save Report Record)
+4. Add credentials in **n8n Settings → Credentials**:
+   - **Google Gemini API** — key from aistudio.google.com
+   - **Gmail OAuth2** — for daily report emails
+5. Click **Activate** (toggle in top-right)
+6. Copy the production webhook URL from the Webhook node and add to `.env`:
 
 ```env
-VITE_N8N_WEBHOOK=https://marketdemo11.app.n8n.cloud/webhook-test/business-strategy
+VITE_N8N_WEBHOOK=https://your.n8n.cloud/webhook/business-strategy
 ```
 
-**Next step**: Build the n8n workflow that handles these `type` values:
+The workflow handles these `type` values routed by a Switch node:
 
-- `onboarding` — Save user + products + competitors
+- `onboarding` — Acknowledge receipt (frontend saves data to Supabase directly)
 - `analysis` — Fetch latest or history (action: `latest` or `history`)
-- `chat` — AI chatbot responses
-- `refresh` — Trigger manual re-analysis
-- `report` — Email report to Gmail
-- `competitor_add_url` — Scrape competitor from URL
-- `competitor_discover_location` — Google search for nearby competitors
+- `reports` — Fetch past report records
+- `chat` — AI chatbot via Gemini (fallback — browser calls Gemini directly first)
+- `refresh` — Run full market analysis with Gemini, save to Supabase
+- `report` — Build HTML email and send via Gmail
+- `competitor_add_url` — Scrape website, extract business name
+- `competitor_discover_location` — Return nearby competitor suggestions
 
 ### 5. Run Development Server
 
@@ -293,22 +307,15 @@ supabase.from('products').upsert(rows, { onConflict: 'user_id,name' })
 
 ## 🚧 Next Steps (Not Yet Implemented)
 
-1. **n8n Workflow Build**
-   - Switch node routing on `type` field
-   - Web scraping nodes for competitor scouting
-   - AI agent nodes for analysis
-   - Gmail node for automated reports
-   - Schedule Trigger (daily 6 AM)
-
-2. **PDF Report Generation**
+1. **PDF Report Generation**
    - Currently mock button in Reports view
    - Needs n8n PDF generation node or puppeteer integration
 
-3. **Competitor Auto-Discovery**
-   - n8n Google search integration for location-based discovery
-   - Needs SerpAPI or Apify node
+2. **Competitor Auto-Discovery (Real)**
+   - `n8n_workflow.json` returns mock results for location discovery
+   - Replace with SerpAPI or Apify node for real Google search results
 
-4. **Real-Time Analysis Status**
+3. **Real-Time Analysis Status**
    - Show progress indicator when analysis is running
    - Polling or WebSocket connection to n8n
 
@@ -337,6 +344,6 @@ For issues or questions, open a GitHub issue.
 
 ---
 
-**Last Updated**: March 9, 2026
+**Last Updated**: March 10, 2026
 **Version**: 1.0.0
-**Status**: Frontend complete ✅ | Auth complete ✅ | Gemini AI complete ✅ | Supabase ready ✅ | n8n workflow pending ⏳
+**Status**: Frontend complete ✅ | Auth complete ✅ | Gemini AI complete ✅ | Supabase ready ✅ | n8n workflow complete ✅
