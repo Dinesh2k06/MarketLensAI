@@ -25,6 +25,8 @@ This is a **B2B SaaS tool** that helps small business owners monitor their compe
 | **Styling** | Tailwind CSS v4 (with `@tailwindcss/vite` plugin) |
 | **Icons** | Lucide React |
 | **Database** | Supabase (PostgreSQL) |
+| **Auth** | Supabase Auth (email + password) |
+| **AI Chatbot** | Google Gemini 1.5 Flash (direct REST API) |
 | **Automation** | n8n Cloud (webhook-based multi-agent system) |
 | **CSV Parsing** | PapaParse |
 | **Email** | n8n Gmail integration |
@@ -36,17 +38,20 @@ This is a **B2B SaaS tool** that helps small business owners monitor their compe
 ```
 c:\Multi-Agent Market Intelligence Bot
 ├── src/
-│   ├── App.jsx                       # Main router (Wizard ↔ Dashboard)
+│   ├── App.jsx                       # Main router (Login → Wizard → Dashboard)
 │   ├── index.css                     # Tailwind v4 entry + dark mode variant
 │   ├── components/
+│   │   ├── LoginPage.jsx             # Email/password login + signup page
 │   │   ├── OnboardingWizard.jsx      # 4-step wizard (Business → Products → Competitors → Launch)
 │   │   └── Dashboard.jsx             # Main dashboard (6 views + sidebar + header + chat FAB)
 │   └── services/
 │       ├── api.js                    # n8n webhook client (single URL, routed by "type" field)
+│       ├── auth.js                   # Supabase Auth wrapper (signUp, signIn, signOut, onAuthStateChange)
+│       ├── gemini.js                 # Gemini 1.5 Flash AI — chat with full business context
 │       └── supabase.js               # Supabase CRUD (products, competitors, analyses, reports)
 ├── supabase_schema.sql               # Database schema (5 tables with RLS)
-├── .env                              # Environment variables (n8n webhook + Supabase keys)
-└── .env.example                      # Template for .env
+├── .env                              # Environment variables (fill from .env.example)
+└── .env.example                      # Template for .env (all 4 required keys)
 ```
 
 ---
@@ -74,7 +79,15 @@ npm install
    VITE_SUPABASE_ANON_KEY=eyJyour-anon-key-here...
    ```
 
-### 3. n8n Webhook Setup
+### 3. Gemini AI Setup (for the chatbot)
+
+1. Go to **https://aistudio.google.com/app/apikey** → Create API key (free tier available)
+2. Add to `.env`:
+   ```env
+   VITE_GEMINI_API_KEY=your-key-here
+   ```
+
+### 4. n8n Webhook Setup
 
 The frontend is already configured with:
 ```env
@@ -91,7 +104,7 @@ VITE_N8N_WEBHOOK=https://marketdemo11.app.n8n.cloud/webhook-test/business-strate
 - `competitor_add_url` — Scrape competitor from URL
 - `competitor_discover_location` — Google search for nearby competitors
 
-### 4. Run Development Server
+### 5. Run Development Server
 
 ```bash
 npm run dev
@@ -99,7 +112,7 @@ npm run dev
 
 Open **http://localhost:5173**
 
-### 5. Build for Production
+### 6. Build for Production
 
 ```bash
 npm run build
@@ -154,7 +167,9 @@ Output: `dist/` folder ready to deploy (Vercel, Netlify, etc.)
 - Fixed bottom-right floating action button
 - Slide-up chat panel with message history
 - Typing indicator with bouncing dots animation
-- Context-aware responses based on analysis data
+- **Powered by Google Gemini 1.5 Flash** — injects your business profile, products, competitors, and latest analysis as context so every answer is personalised
+- Fallback chain: Gemini → n8n webhook → informative error message
+- Answers general business, pricing, and retail strategy questions — not limited to your data
 
 ### Dark Mode
 
@@ -278,23 +293,19 @@ supabase.from('products').upsert(rows, { onConflict: 'user_id,name' })
 1. **n8n Workflow Build**
    - Switch node routing on `type` field
    - Web scraping nodes for competitor scouting
-   - AI agent nodes for analysis and chatbot
+   - AI agent nodes for analysis
    - Gmail node for automated reports
    - Schedule Trigger (daily 6 AM)
 
-2. **User Authentication**
-   - Currently no login system (localStorage + Supabase user_id only)
-   - Consider adding Supabase Auth or Magic Link login
-
-3. **PDF Report Generation**
+2. **PDF Report Generation**
    - Currently mock button in Reports view
    - Needs n8n PDF generation node or puppeteer integration
 
-4. **Competitor Auto-Discovery**
+3. **Competitor Auto-Discovery**
    - n8n Google search integration for location-based discovery
    - Needs SerpAPI or Apify node
 
-5. **Real-Time Analysis Status**
+4. **Real-Time Analysis Status**
    - Show progress indicator when analysis is running
    - Polling or WebSocket connection to n8n
 
@@ -324,5 +335,4 @@ For issues or questions, open a GitHub issue.
 
 **Last Updated**: March 9, 2026
 **Version**: 1.0.0
-**Status**: Frontend complete ✅ | Supabase schema ready ✅ | n8n workflow pending ⏳
-"# MarketLensAI" 
+**Status**: Frontend complete ✅ | Auth complete ✅ | Gemini AI complete ✅ | Supabase ready ✅ | n8n workflow pending ⏳
